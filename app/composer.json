@@ -1,0 +1,18 @@
+{
+    "name": "jeffrysimon/training_news_no_framework",
+    "description": "A news system with vanilla php",
+    "authors": [
+        {
+            "name": "Jeffry J. Simon",
+            "email": "simon.dev93@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    }
+}
