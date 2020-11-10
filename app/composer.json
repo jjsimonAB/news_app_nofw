@@ -8,7 +8,8 @@
         }
     ],
     "require": {
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "robmorgan/phinx": "^0.12.4"
     },
     "autoload": {
         "psr-4": {

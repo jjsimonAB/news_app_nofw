@@ -1,10 +1,10 @@
-version: "3"
+version: "1"
 
 services:
 
   #php server
   php:
-    image: php:7.4-fpm
+    build: ./docker/php
     volumes:
       - ./app:/app
     depends_on:
