@@ -9,7 +9,8 @@
     ],
     "require": {
         "vlucas/phpdotenv": "^2.4",
-        "robmorgan/phinx": "^0.12.4"
+        "robmorgan/phinx": "^0.12.4",
+        "firebase/php-jwt": "^5.2"
     },
     "autoload": {
         "psr-4": {
