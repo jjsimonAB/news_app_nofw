@@ -15,6 +15,12 @@ class Request
         $this->contentType = !empty($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
     }
 
+    public static function getHeaders()
+    {
+        $headers = getallheaders();
+        return $headers;
+    }
+
     public function getBody()
     {
         if ($this->reqMethod !== 'POST') {
