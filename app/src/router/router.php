@@ -53,7 +53,6 @@ class Router
         $is_match = preg_match('/^' . ($regex) . '$/', $params, $matches, PREG_OFFSET_CAPTURE);
 
         if ($is_match) {
-
             array_shift($matches);
             $params = array_map(function ($param) {
                 return $param[0];

@@ -36,18 +36,21 @@ Router::post('/users/register', function (Request $req, Response $res) {
     UserController::registerUser($req, $res);
 });
 
-//news
-
+//news routes
 Router::get('/news', function (Request $req, Response $res) {
     NewsController::getNews($req, $res);
 });
 
 Router::get('/news/([0-9]*)', function (Request $req, Response $res) {
-    NewsController::newDetail($req, $res);
+    NewsController::getNewsDetail($req, $res);
 });
 
 Router::post('/news', function (Request $req, Response $res) {
     NewsController::addNews($req, $res);
+});
+
+Router::put('/news/([0-9]*)', function (Request $req, Response $res) {
+    NewsController::editNew($req, $res);
 });
 
 // Router::get('/post/([0-9]*)', function (Request $req, Response $res) {

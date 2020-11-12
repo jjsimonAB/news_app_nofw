@@ -39,16 +39,37 @@ class NewsController
         $res->toJSON([
             'data' => $data,
         ]);
-
     }
 
-    public static function newDetail(Request $req, Response $res)
+    public static function getNewsDetail(Request $req, Response $res)
     {
         $id = $req->params[0];
         $news = new NewsService();
         $data = $news->getNewsDetail($id);
 
         $res->toJSON([
+            'data' => $data,
+        ]);
+    }
+
+    public static function editNew(Request $req, Response $res)
+    {
+        $id = $req->params[0];
+        $news = new NewsService();
+        $data = $news->updateNew($id, $req->getJson());
+
+        $res->toJson([
+            'data' => $data,
+        ]);
+    }
+
+    public static function deleteNew(Request $req, Response $res)
+    {
+        $id = $req->params[0];
+        $news = new NewsService();
+        $data = $news->deleteNew($id);
+
+        $res->toJson([
             'data' => $data,
         ]);
     }
