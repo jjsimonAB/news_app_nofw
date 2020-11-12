@@ -28,12 +28,12 @@ class JwtUtil
 
             try {
                 $decodedToken = JWT::decode($jwtToken[1], $key, array('HS256'));
-                print_r($decodedToken);
                 return $decodedToken;
-
             } catch (Exceptino $e) {
                 return $e;
             }
+        } else {
+            return false;
         }
     }
 

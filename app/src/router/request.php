@@ -7,6 +7,7 @@ class Request
     public $params;
     public $reqMethod;
     public $contentType;
+    private $user;
 
     public function __construct($params = [])
     {
@@ -19,6 +20,16 @@ class Request
     {
         $headers = getallheaders();
         return $headers;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 
     public function getBody()

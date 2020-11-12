@@ -18,8 +18,9 @@ class NewsController
      */
     public static function getNews(Request $req, Response $res)
     {
+        $user = $req->getUser();
         $news = new NewsService();
-        $data = $news->getAllNews();
+        $data = $news->getAllNews($user->id);
 
         $res->toJSON([
             'data' => $data,
@@ -33,8 +34,9 @@ class NewsController
      */
     public static function addNews(Request $req, Response $res)
     {
+        $user = $req->getUser();
         $news = new NewsService();
-        $data = $news->addNews($req->getJson());
+        $data = $news->addNews($user->id, $req->getJson());
 
         $res->toJSON([
             'data' => $data,

@@ -4,42 +4,65 @@ namespace Src\model;
 
 use Src\db\DatabaseCon;
 
-class NewsService
+class NewsService extends DatabaseCon
 {
     private $dbConnection = null;
 
     public function __construct()
     {
-        $this->dbConnection = (new DatabaseCon())->getConnection();
+        $this->dbConnection = $this->getConnection();
     }
 
     /**
      * to-do
      * - find a better name for this
      */
-    public function getAllNews()
+    public function getAllNews($authorId)
     {
         $statement = "
-            SELECT * FROM news where deleted_at IS NOT NULL;
+            SELECT *
+            FROM news
+            where author_id = :author_id AND deleted_at IS NULL;
         ";
+
+        $statement2 = "
+            SELECT categories.id, categories.category_name
+            FROM news_categories
+            LEFT JOIN categories on news_categories.categorie_id = categories.id
+            where news_id = :new_id;
+        ";
+
+        $categories = [];
 
         try {
             $statement = $this->dbConnection->prepare($statement);
-            $statement->execute();
+            $statement->execute(array(
+                'author_id' => $authorId,
+            ));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            foreach ($result as $key => $res) {
+                $statement = $this->dbConnection->prepare($statement2);
+                $statement->execute(array(
+                    'new_id' => $res['id'],
+                ));
+                $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
+                $result[$key]['categorie'] = $categories;
+            }
+
             return $result;
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            return $e->getMessage();
         }
     }
 
-    public function addNews($body = [])
+    public function addNews($authorId, $body = [])
     {
         $statement = "
             INSERT INTO news
-                (title, content, author, views)
+                (title, content, author_id, views)
             VALUES
-                (:title, :content, :author, :views);
+                (:title, :content, :author_id, :views);
         ";
 
         try {
@@ -47,7 +70,7 @@ class NewsService
             $statement->execute(array(
                 'title' => $body->title,
                 'content' => $body->content,
-                'author' => $body->author,
+                'author_id' => $authorId,
                 'views' => $body->views,
             ));
             return $statement->rowCount();
@@ -60,18 +83,21 @@ class NewsService
     {
         $statement = "
             SELECT * FROM news
-            WHERE id = ?
-            AND deleted_at IS NOT NULL
-            ;
+            WHERE id = :id
+            AND author = :authorId
+            AND deleted_at IS NULL
         ";
 
         try {
             $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array($id));
+            $statement->execute(array(
+                'id' => $id,
+                'authorId' => $authorId,
+            ));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -95,7 +121,7 @@ class NewsService
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -116,7 +142,7 @@ class NewsService
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            return $e->getMessage();
         }
     }
 }

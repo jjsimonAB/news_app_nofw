@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 
 use Phinx\Migration\AbstractMigration;
 
@@ -21,6 +21,7 @@ final class NewsMigration extends AbstractMigration
         $user_table = $this->table('users');
         $news_table = $this->table('news');
         $categories_table = $this->table('categories');
+        $news_categories = $this->table('news_categories');
 
         // creating users migration.
         $user_table->addColumn('user_name', 'string')
@@ -33,17 +34,24 @@ final class NewsMigration extends AbstractMigration
 
         $news_table->addColumn('title', 'string')
             ->addColumn('content', 'text')
-            ->addColumn('author', 'string')
+            ->addColumn('author_id', 'integer')
             ->addColumn('views', 'integer')
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('deleted_at', 'timestamp', ['null' => 'true'])
+            ->addForeignKey('author_id', 'users', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
             ->create();
-        
-        $categories_table->addColumn('category_name', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+
+        $categories_table->addColumn('category_name', 'string')
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('deleted_at', 'timestamp', ['null' => 'true'])
+            ->create();
+
+        $news_categories->addColumn('news_id', 'integer', ['null' => false])
+            ->addColumn('categorie_id', 'integer', ['null' => false])
+            ->addForeignKey('news_id', 'news', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
+            ->addForeignKey('categorie_id', 'categories', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
             ->create();
     }
 }

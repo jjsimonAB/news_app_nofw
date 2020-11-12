@@ -4,14 +4,14 @@ namespace Src\model;
 
 use Src\db\DatabaseCon;
 
-class UserModel
+class UserModel extends DatabaseCon
 {
     private $dbConnection = null;
 
     public function __construct()
     {
 
-        $this->dbConnection = (new DatabaseCon())->getConnection();
+        $this->dbConnection = $this->getConnection();
     }
 
     public function getUserByEmail(String $email)

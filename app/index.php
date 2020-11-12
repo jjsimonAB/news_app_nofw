@@ -24,10 +24,6 @@ Router::get('/', function () {
     echo 'Hello World';
 });
 
-Router::get('/users/headers', function (Request $req, Response $res) {
-    JwtUtil::validateToken($req::getHeaders());
-});
-
 Router::post('/users/login', function (Request $req, Response $res) {
     UserController::logIn($req, $res);
 });
@@ -36,26 +32,61 @@ Router::post('/users/register', function (Request $req, Response $res) {
     UserController::registerUser($req, $res);
 });
 
+/**
+ * TO-DO
+ * -implement some sort of middleware logic
+ * -refactor, authorization logic
+ */
+
 //news routes
 Router::get('/news', function (Request $req, Response $res) {
-    NewsController::getNews($req, $res);
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::getNews($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
 });
 
 Router::get('/news/([0-9]*)', function (Request $req, Response $res) {
-    NewsController::getNewsDetail($req, $res);
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::getNewsDetail($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
 });
 
 Router::post('/news', function (Request $req, Response $res) {
-    NewsController::addNews($req, $res);
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::addNews($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
 });
 
 Router::put('/news/([0-9]*)', function (Request $req, Response $res) {
-    NewsController::editNew($req, $res);
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::editNew($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
 });
-
-// Router::get('/post/([0-9]*)', function (Request $req, Response $res) {
-//     $res->toJSON([
-//         'post' => ['id' => $req->params[0]],
-//         'status' => 'ok',
-//     ]);
-// });

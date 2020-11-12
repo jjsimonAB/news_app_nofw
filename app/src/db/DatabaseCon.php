@@ -8,6 +8,11 @@ class DatabaseCon
 
     public function __construct()
     {
+
+    }
+
+    public function getConnection()
+    {
         $host = getenv('DB_HOST');
         $port = getenv('DB_PORT');
         $db = getenv('DB_DATABASE');
@@ -23,10 +28,7 @@ class DatabaseCon
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
-    }
 
-    public function getConnection()
-    {
         return $this->dbConnection;
     }
 }
