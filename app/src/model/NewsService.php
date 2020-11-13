@@ -17,7 +17,7 @@ class NewsService extends DatabaseCon
      * to-do
      * - find a better name for this
      */
-    public function getAllNews($authorId)
+    public function getAllNews(int $authorId)
     {
         /**
          * TO-DO
@@ -40,7 +40,7 @@ class NewsService extends DatabaseCon
         }
     }
 
-    public function addNews($authorId, $body = [])
+    public function addNews(int $authorId, object $body)
     {
         $statement = "
             INSERT INTO news
@@ -65,7 +65,7 @@ class NewsService extends DatabaseCon
         }
     }
 
-    public function getNewsDetail($id, $authorId)
+    public function getNewsDetail(int $id, int $authorId)
     {
         $statement = "
             SELECT * FROM news
@@ -78,7 +78,7 @@ class NewsService extends DatabaseCon
             SELECT categories.id, categories.category_name
             FROM news_categories
             LEFT JOIN categories on news_categories.categorie_id = categories.id
-            where news_id = :new_id;
+            where news_categories.news_id = :news_id;
         ";
 
         $categories = [];
@@ -96,9 +96,10 @@ class NewsService extends DatabaseCon
              */
             $statement = $this->dbConnection->prepare($statement2);
             $statement->execute(array(
-                'new_id' => $res['id'],
+                'news_id' => $result[0]['id'],
             ));
             $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            // print_r($categories);
             $result[0]['categories'] = $categories;
 
             return $result;
@@ -107,7 +108,7 @@ class NewsService extends DatabaseCon
         }
     }
 
-    public function updateNews($id, $body)
+    public function updateNews(int $id, object $body)
     {
         $statement = "
             UPDATE news
@@ -131,7 +132,7 @@ class NewsService extends DatabaseCon
         }
     }
 
-    public function deleteNews($id)
+    public function deleteNews(int $id)
     {
         $statement = "
             UPDATE news
@@ -185,7 +186,6 @@ class NewsService extends DatabaseCon
             VALUES
                 (:news_id, :categorie_id);
         ";
-
         try {
             $statement = $this->dbConnection->prepare($statement);
             foreach ($data as $key => $value) {
@@ -197,5 +197,45 @@ class NewsService extends DatabaseCon
         } catch (\PDOException $e) {
             print_r($e->getMessage());
         }
+    }
+
+    public function getFiltredNews(int $userId, array $queryParams)
+    {
+        $filterKey = array_keys($queryParams)[0];
+
+        $statement = "
+            SELECT news.id, news.title
+            FROM news
+            where $filterKey = :value AND is_deleted = 0;
+        ";
+
+        try {
+            $statement = $this->dbConnection->prepare($statement);
+            $statement->execute(array(
+                'value' => $queryParams[$filterKey],
+            ));
+            return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+
+        // switch ($filterKey) {
+        //     case 'title':
+        //         echo $queryParams[$filterKey];
+        //         break;
+        //     case 'author':
+        //         echo $queryParams[$filterKey];
+        //         break;
+        //     case 'content':
+        //         echo $queryParams[$filterKey];
+        //         break;
+        //     case 'between':
+        //         echo $queryParams[$filterKey];
+        //         break;
+        //     default:
+        //         return 'invalid filter';
+        //         break;
+        // }
+
     }
 }

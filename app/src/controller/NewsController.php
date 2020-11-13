@@ -25,7 +25,6 @@ class NewsController
         $res->toJSON([
             'data' => $data,
         ]);
-
     }
 
     /**
@@ -89,6 +88,17 @@ class NewsController
                 'error' => "you don't own this",
             ]);
         }
+    }
+
+    public static function getNewsFiltred(Request $req, Response $res)
+    {
+        $user = $req->getUser();
+        $news = new NewsService();
+        $data = $news->getFiltredNews($user->id, $req->getQueryParams());
+
+        $res->toJSON([
+            'data' => $data,
+        ]);
     }
 
 }

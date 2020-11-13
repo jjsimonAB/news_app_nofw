@@ -16,12 +16,6 @@ class Request
         $this->contentType = !empty($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
     }
 
-    public static function getHeaders()
-    {
-        $headers = getallheaders();
-        return $headers;
-    }
-
     public function getUser()
     {
         return $this->user;
@@ -30,6 +24,21 @@ class Request
     public function setUser($user)
     {
         $this->user = $user;
+    }
+
+    public static function getHeaders()
+    {
+        $headers = getallheaders();
+        return $headers;
+    }
+
+    public static function getQueryParams()
+    {
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+        array_shift($queries);
+
+        return $queries;
     }
 
     public function getBody()
@@ -48,9 +57,6 @@ class Request
 
     public function getJSON()
     {
-        // if ($this->reqMethod !== 'POST' || $this->reqMethod !== 'PUT') {
-        //     return [];
-        // }
 
         if (strcasecmp($this->contentType, 'application/json') !== 0) {
             return [];

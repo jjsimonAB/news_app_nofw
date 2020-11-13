@@ -44,6 +44,7 @@ final class NewsMigration extends AbstractMigration
 
         $categories_table->addColumn('category_name', 'string')
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+            ->addColumn('is_deleted', 'boolean', ['default' => '0'])
             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('deleted_at', 'timestamp', ['null' => 'true'])
             ->create();

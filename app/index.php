@@ -3,6 +3,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
+use Src\controller\CategoriesController;
 use Src\controller\NewsController;
 use Src\controller\UserController;
 use Src\router\Request;
@@ -17,7 +18,7 @@ $dotenv->load();
 
 /**
  * Routes part
- * to-do:
+ * TO-DO:
  * - refactoring moving this logic to another file
  */
 Router::get('/', function () {
@@ -44,6 +45,19 @@ Router::get('/news', function (Request $req, Response $res) {
     if ($token) {
         $req->setUser($token->user);
         NewsController::getNews($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});
+
+Router::get('/news/f/(.*)', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::getNewsFiltred($req, $res);
     } else {
         $res->status(401);
         $res->toJSON([
@@ -96,6 +110,59 @@ Router::delete('/news/([0-9]*)', function (Request $req, Response $res) {
     if ($token) {
         $req->setUser($token->user);
         NewsController::deleteNews($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});
+
+// Categories routes
+Router::get('/categories', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        CategoriesController::getCategories($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});
+
+Router::post('/categories', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        CategoriesController::addCategory($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});
+
+Router::put('/categories/([0-9]*)', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        CategoriesController::editCategory($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});
+
+Router::delete('/categories/([0-9]*)', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        CategoriesController::deleteCategory($req, $res);
     } else {
         $res->status(401);
         $res->toJSON([
