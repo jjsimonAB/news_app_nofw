@@ -41,13 +41,17 @@ class NewsService extends DatabaseCon
             ));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
+            /**
+             * TO-DO
+             * - Refactor: move this to a private function
+             */
             foreach ($result as $key => $res) {
                 $statement = $this->dbConnection->prepare($statement2);
                 $statement->execute(array(
                     'new_id' => $res['id'],
                 ));
                 $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
-                $result[$key]['categorie'] = $categories;
+                $result[$key]['categories'] = $categories;
             }
 
             return $result;
@@ -64,7 +68,6 @@ class NewsService extends DatabaseCon
             VALUES
                 (:title, :content, :author_id, :views);
         ";
-
         try {
             $statement = $this->dbConnection->prepare($statement);
             $statement->execute(array(
@@ -73,19 +76,22 @@ class NewsService extends DatabaseCon
                 'author_id' => $authorId,
                 'views' => $body->views,
             ));
+            $insertedID = $this->dbConnection->lastInsertId();
+            if (isset($body->categories)) {
+                $this->attachCategorieToNews($insertedID, $body->categories);
+            }
             return $statement->rowCount();
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
     }
 
-    public function getNewsDetail($id)
+    public function getNewsDetail($id, $authorId)
     {
         $statement = "
             SELECT * FROM news
             WHERE id = :id
-            AND author = :authorId
-            AND deleted_at IS NULL
+            AND author_id = :authorId
         ";
 
         try {
@@ -143,6 +149,54 @@ class NewsService extends DatabaseCon
             return $statement->rowCount();
         } catch (\PDOException $e) {
             return $e->getMessage();
+        }
+    }
+
+    public function isOwner(int $authorId, int $newsId)
+    {
+        $statement = "
+            SELECT * FROM news
+            WHERE id = :id
+            AND author_id = :authorId
+        ";
+
+        try {
+            $statement = $this->dbConnection->prepare($statement);
+            $statement->execute(array(
+                'id' => $newsId,
+                'authorId' => $authorId,
+            ));
+            $result = $statement->rowCount();
+            if ($result > 0) {
+                return true;
+            }
+
+            return false;
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    private function attachCategorieToNews(int $id, array $data): void
+    {
+
+        $statement = "
+            INSERT INTO news_categories
+                (news_id, categorie_id)
+            VALUES
+                (:news_id, :categorie_id);
+        ";
+
+        try {
+            $statement = $this->dbConnection->prepare($statement);
+            foreach ($data as $key => $value) {
+                $statement->execute(array(
+                    'news_id' => $id,
+                    'categorie_id' => $value,
+                ));
+            }
+        } catch (\PDOException $e) {
+            print_r($e->getMessage());
         }
     }
 }
