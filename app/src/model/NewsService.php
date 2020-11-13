@@ -44,9 +44,9 @@ class NewsService extends DatabaseCon
     {
         $statement = "
             INSERT INTO news
-                (title, content, author_id, views)
+                (title, content, author_id)
             VALUES
-                (:title, :content, :author_id, :views);
+                (:title, :content, :author_id);
         ";
         try {
             $statement = $this->dbConnection->prepare($statement);
@@ -54,7 +54,6 @@ class NewsService extends DatabaseCon
                 'title' => $body->title,
                 'content' => $body->content,
                 'author_id' => $authorId,
-                'views' => $body->views,
             ));
             $insertedID = $this->dbConnection->lastInsertId();
             if (isset($body->categories)) {
@@ -137,7 +136,7 @@ class NewsService extends DatabaseCon
         $statement = "
             UPDATE news
             SET
-                is_deleted = 1,
+             is_deleted = 1
             WHERE id = :id;
         ";
 
