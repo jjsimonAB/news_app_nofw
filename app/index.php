@@ -90,3 +90,16 @@ Router::put('/news/([0-9]*)', function (Request $req, Response $res) {
         ]);
     }
 });
+
+Router::delete('/news/([0-9]*)', function (Request $req, Response $res) {
+    $token = JwtUtil::validateToken($req->getHeaders());
+    if ($token) {
+        $req->setUser($token->user);
+        NewsController::deleteNews($req, $res);
+    } else {
+        $res->status(401);
+        $res->toJSON([
+            'error' => "Unauthorized token",
+        ]);
+    }
+});

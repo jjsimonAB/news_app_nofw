@@ -19,42 +19,22 @@ class NewsService extends DatabaseCon
      */
     public function getAllNews($authorId)
     {
+        /**
+         * TO-DO
+         * - Add view counter
+         */
         $statement = "
-            SELECT *
+            SELECT news.id, news.title
             FROM news
-            where author_id = :author_id AND deleted_at IS NULL;
+            where author_id = :author_id AND is_deleted = 0;
         ";
-
-        $statement2 = "
-            SELECT categories.id, categories.category_name
-            FROM news_categories
-            LEFT JOIN categories on news_categories.categorie_id = categories.id
-            where news_id = :new_id;
-        ";
-
-        $categories = [];
 
         try {
             $statement = $this->dbConnection->prepare($statement);
             $statement->execute(array(
                 'author_id' => $authorId,
             ));
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-
-            /**
-             * TO-DO
-             * - Refactor: move this to a private function
-             */
-            foreach ($result as $key => $res) {
-                $statement = $this->dbConnection->prepare($statement2);
-                $statement->execute(array(
-                    'new_id' => $res['id'],
-                ));
-                $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
-                $result[$key]['categories'] = $categories;
-            }
-
-            return $result;
+            return $statement->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
@@ -92,7 +72,17 @@ class NewsService extends DatabaseCon
             SELECT * FROM news
             WHERE id = :id
             AND author_id = :authorId
+            AND is_deleted = 0
         ";
+
+        $statement2 = "
+            SELECT categories.id, categories.category_name
+            FROM news_categories
+            LEFT JOIN categories on news_categories.categorie_id = categories.id
+            where news_id = :new_id;
+        ";
+
+        $categories = [];
 
         try {
             $statement = $this->dbConnection->prepare($statement);
@@ -101,13 +91,24 @@ class NewsService extends DatabaseCon
                 'authorId' => $authorId,
             ));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            /**
+             * TO-DO
+             * - Refactor: move this to a private function
+             */
+            $statement = $this->dbConnection->prepare($statement2);
+            $statement->execute(array(
+                'new_id' => $res['id'],
+            ));
+            $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $result[0]['categories'] = $categories;
+
             return $result;
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
     }
 
-    public function updateNew($id, $body)
+    public function updateNews($id, $body)
     {
         $statement = "
             UPDATE news
@@ -131,20 +132,19 @@ class NewsService extends DatabaseCon
         }
     }
 
-    public function deleteNew($id)
+    public function deleteNews($id)
     {
         $statement = "
             UPDATE news
             SET
-                deleted_at = :date,
+                is_deleted = 1,
             WHERE id = :id;
         ";
 
         try {
-            $statement = $this->db->prepare($statement);
+            $statement = $this->dbConnection->prepare($statement);
             $statement->execute(array(
                 'id' => (int) $id,
-                'deleted_at' => date("Y-m-d H:i:s"),
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {

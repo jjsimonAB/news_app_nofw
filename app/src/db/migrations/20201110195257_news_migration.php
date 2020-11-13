@@ -35,10 +35,10 @@ final class NewsMigration extends AbstractMigration
         $news_table->addColumn('title', 'string')
             ->addColumn('content', 'text')
             ->addColumn('author_id', 'integer')
-            ->addColumn('views', 'integer')
+            ->addColumn('views', 'integer', ['default' => '0'])
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-            ->addColumn('deleted_at', 'timestamp', ['null' => 'true'])
+            ->addColumn('is_deleted', 'boolean', ['null' => 'false', 'default' => '0'])
             ->addForeignKey('author_id', 'users', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
             ->create();
 

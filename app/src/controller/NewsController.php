@@ -61,7 +61,7 @@ class NewsController
         $id = $req->params[0];
         $news = new NewsService();
         if ($news->isOwner($user->id, $id)) {
-            $data = $news->updateNew($id, $req->getJson());
+            $data = $news->updateNews($id, $req->getJson());
             $res->toJson([
                 'data' => $data,
             ]);
@@ -73,15 +73,22 @@ class NewsController
         }
     }
 
-    public static function deleteNew(Request $req, Response $res)
+    public static function deleteNews(Request $req, Response $res)
     {
+        $user = $req->getUser();
         $id = $req->params[0];
         $news = new NewsService();
-        $data = $news->deleteNew($id);
-
-        $res->toJson([
-            'data' => $data,
-        ]);
+        if ($news->isOwner($user->id, $id)) {
+            $data = $news->deleteNews($id);
+            $res->toJson([
+                'data' => $data,
+            ]);
+        } else {
+            $res->status(500);
+            $res->toJson([
+                'error' => "you don't own this",
+            ]);
+        }
     }
 
 }
