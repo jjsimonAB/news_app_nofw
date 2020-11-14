@@ -18,4 +18,4 @@ build:
 
 test:
 	@echo "*** STARTING TESTS.... 🤖🤖👾👾 ******"
-	cd app && php vendor/bin/codecept run --steps
+	cd app && php vendor/bin/codecept run api --steps
