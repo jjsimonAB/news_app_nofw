@@ -3,6 +3,7 @@ start:
 	@echo "---------------------------------"
 	@echo "---- step 1/4: getting environment 🏝🏝🏝🏝🏝🏝"
 	cp example.env .env
+	cp app/example.env app/.env
 	@echo "---- step 2/4: installing composer dependencies 🤖🤖🤖🤖🤖🤖"
 	cd app && composer install
 	@echo "---- step 3/4: starting docker containers 🐳🐳🐳🐳🐳🐳🐳🐳🐳🐳"
