@@ -2,9 +2,9 @@
 
 namespace Src\controller;
 
-use Src\model\UserModel;
 use Src\router\Request;
 use Src\router\Response;
+use Src\service\UserService;
 use Src\utils\JwtUtil;
 
 class UserController
@@ -24,8 +24,8 @@ class UserController
     public static function logIn(Request $req, Response $res)
     {
         $body = $req->getJson();
-        $model = new UserModel();
-        $user = $model->getUserByEmail($body->email);
+        $userService = new UserService();
+        $user = $userService->getUserByEmail($body->email);
 
         if (hash_equals(hash('sha1', $body->password), $user[0]['password'])) {
             $jwtToken = JwtUtil::generateJwt(array(
@@ -45,9 +45,9 @@ class UserController
 
     public static function registerUser(Request $req, Response $res)
     {
-        $model = new UserModel();
+        $userService = new UserService();
         $res->toJSON([
-            'data' => $model->registerUser($req->getJson()),
+            'data' => $userService->registerUser($req->getJson()),
         ]);
     }
 

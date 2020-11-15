@@ -1,10 +1,10 @@
 <?php
 
-namespace Src\model;
+namespace Src\service;
 
 use Src\db\DatabaseCon;
 
-class UserModel extends DatabaseCon
+class UserService extends DatabaseCon
 {
     private $dbConnection = null;
 

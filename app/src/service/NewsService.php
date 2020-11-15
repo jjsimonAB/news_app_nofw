@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\model;
+namespace Src\service;
 
 use Src\db\DatabaseCon;
 
