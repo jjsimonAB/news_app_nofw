@@ -2,9 +2,9 @@
 
 namespace Src\controller;
 
-use Src\model\CategoriesService;
 use Src\router\Request;
 use Src\router\Response;
+use Src\service\CategoriesService;
 
 class CategoriesController
 {

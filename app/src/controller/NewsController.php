@@ -2,9 +2,9 @@
 
 namespace Src\controller;
 
-use Src\model\NewsService;
 use Src\router\Request;
 use Src\router\Response;
+use Src\service\NewsService;
 
 class NewsController
 {
