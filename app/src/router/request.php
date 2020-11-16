@@ -28,8 +28,7 @@ class Request
 
     public static function getHeaders()
     {
-        $headers = getallheaders();
-        return $headers;
+        return getallheaders();
     }
 
     public static function getQueryParams()

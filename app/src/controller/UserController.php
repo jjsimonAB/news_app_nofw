@@ -32,15 +32,15 @@ class UserController
                 "id" => $user[0]['id'],
                 "user_name" => $user[0]['user_name'],
             ));
-
             $res->toJSON([
-                'jwt' => $jwtToken,
-            ]);
-        } else {
-            $res->toJSON([
-                'error' => "user not found",
+                'data' => $jwtToken,
             ]);
         }
+
+        $res->status(404);
+        $res->toJSON([
+            'data' => "user not found",
+        ]);
     }
 
     public static function registerUser(Request $req, Response $res)

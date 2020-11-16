@@ -10,13 +10,12 @@ class JwtUtil
     {
         $key = getenv('JWT_KEY');
         $payload = array(
-            "iss" => "http://example.org",
+            "iss" => "http://test.org",
             "user" => $body,
             "iat" => time(),
         );
 
         $jwt = JWT::encode($payload, $key);
-
         return $jwt;
     }
 

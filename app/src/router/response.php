@@ -17,7 +17,7 @@ class Response
         http_response_code($this->status);
         header('Content-Type: application/json');
         $response = array(
-            'status' => ($status === 200) ? 'failed' : 'success',
+            'status' => ($this->status === 200) ? 'success' : 'failed',
             'data' => $data['data'],
         );
 
