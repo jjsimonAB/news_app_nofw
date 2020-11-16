@@ -10,7 +10,7 @@ class NewsTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => [],
+            'status' => 'success',
         ]);
     }
 
@@ -26,7 +26,7 @@ class NewsTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => 1,
+            'status' => 'success',
         ]);
     }
 
@@ -41,7 +41,7 @@ class NewsTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => 1,
+            'status' => 'success',
         ]);
     }
 
@@ -53,7 +53,7 @@ class NewsTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => [[]],
+            'status' => 'success',
         ]);
     }
 
@@ -64,8 +64,8 @@ class NewsTestCest
         $I->sendDelete('news/11');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
-        // $I->seeResponseContainsJson([
-        //     'data',
-        // ]);
+        $I->seeResponseContainsJson([
+            'status' => 'success',
+        ]);
     }
 }

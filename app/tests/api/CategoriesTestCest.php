@@ -10,7 +10,7 @@ class CategoriesTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => [],
+            'status' => 'success',
         ]);
     }
 
@@ -24,7 +24,7 @@ class CategoriesTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => 1,
+            'status' => 'success',
         ]);
     }
 
@@ -38,7 +38,7 @@ class CategoriesTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => 1,
+            'status' => 'success',
         ]);
     }
 
@@ -49,8 +49,8 @@ class CategoriesTestCest
         $I->sendDelete('categories/4');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
-        // $I->seeResponseContainsJson([
-        //     'data',
-        // ]);
+        $I->seeResponseContainsJson([
+            'status' => 'success',
+        ]);
     }
 }

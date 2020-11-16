@@ -16,6 +16,11 @@ class Response
     {
         http_response_code($this->status);
         header('Content-Type: application/json');
-        die(json_encode($data));
+        $response = array(
+            'status' => ($status === 200) ? 'failed' : 'success',
+            'data' => $data['data'],
+        );
+
+        die(json_encode($response));
     }
 }

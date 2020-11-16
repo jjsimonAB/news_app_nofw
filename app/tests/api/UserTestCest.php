@@ -14,7 +14,7 @@ class UserTestCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-            'data' => 1,
+            'status' => 'success',
         ]);
     }
 
@@ -27,8 +27,8 @@ class UserTestCest
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK); // 200
         $I->seeResponseIsJson();
-        // $I->seeResponseContainsJson([
-        //     'data' => 1,
-        // ]);
+        $I->seeResponseContainsJson([
+            'status' => 'success',
+        ]);
     }
 }
