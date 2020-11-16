@@ -11,6 +11,5 @@ To start API run on your terminal:
 > $ make start
 
 To run tests:
-
 > $ make test
 
