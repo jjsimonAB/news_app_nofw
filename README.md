@@ -1,7 +1,16 @@
-# news_app_nofw
+# Mctekk-test
+Quick test for Mctekk.
 
-#to start
-$ make start
 
-#to test
-$ make test
+## Requirements:
+Docker and docker-compose installed
+
+
+To start API run on your terminal:
+
+> $ make start
+
+To run tests:
+
+> $ make test
+
