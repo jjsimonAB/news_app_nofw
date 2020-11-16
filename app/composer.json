@@ -8,11 +8,19 @@
         }
     ],
     "require": {
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "robmorgan/phinx": "^0.12.4",
+        "firebase/php-jwt": "^5.2"
     },
     "autoload": {
         "psr-4": {
             "Src\\": "src/"
         }
+    },
+    "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-phpbrowser": "^1.0.0",
+        "codeception/module-asserts": "^1.0.0",
+        "codeception/module-rest": "^1.2"
     }
 }
