@@ -9,25 +9,21 @@ use Src\utils\JwtUtil;
 
 class UserController
 {
+
     /**
-     * Moving this into a static way
+     * Logs in an user and response with a valid JWT
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
      */
-    // private Request $request;
-    // private Response $response;
-
-    // public function __construct(Request $request, Response $response)
-    // {
-    //     $this->request = $request;
-    //     $this->response = $response;
-    // }
-
-    public static function logIn(Request $req, Response $res)
+    public static function logIn(Request $req, Response $res): void
     {
         $body = $req->getJson();
         $userService = new UserService();
         $user = $userService->getUserByEmail($body->email);
 
-        if (hash_equals(hash('sha1', $body->password), $user[0]['password'])) {
+        if (password_verify($body->password, $user[0]['password'])) {
             $jwtToken = JwtUtil::generateJwt(array(
                 "id" => $user[0]['id'],
                 "user_name" => $user[0]['user_name'],
@@ -43,12 +39,18 @@ class UserController
         ]);
     }
 
-    public static function registerUser(Request $req, Response $res)
+    /**
+     * Creates a new user in the database
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function registerUser(Request $req, Response $res): void
     {
         $userService = new UserService();
         $res->toJSON([
             'data' => $userService->registerUser($req->getJson()),
         ]);
     }
-
 }

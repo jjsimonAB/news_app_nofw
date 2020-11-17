@@ -10,14 +10,15 @@ class CategoriesService extends DatabaseCon
 
     public function __construct()
     {
-        $this->dbConnection = $this->getConnection();
+        $this->dbConnection = DatabaseCon::getInstance();;
     }
 
     /**
-     * to-do
-     * - find a better name for this
+     * returns all the categories from the database
+     *
+     * @return Array categories
      */
-    public function getAllCategories()
+    public function getAllCategories(): array
     {
         /**
          * TO-DO
@@ -29,16 +30,15 @@ class CategoriesService extends DatabaseCon
             where is_deleted = 0;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute();
-            return $statement->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        return $this->dbConnection->query($statement)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function addCategory(object $body)
+    /**
+     * Insert a category into the database
+     *
+     * @return Int
+     */
+    public function addCategory(object $body): int
     {
         $statement = "
             INSERT INTO categories
@@ -46,18 +46,20 @@ class CategoriesService extends DatabaseCon
             VALUES
                 (:name);
         ";
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'name' => $body->name,
-            ));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+
+        $data = array(
+            'name' => $body->name,
+        );
+
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 
-    public function updateCategory(int $id, object $body)
+    /**
+     * Updates an existent category in the database;
+     *
+     * @return Int
+     */
+    public function updateCategory(int $id, object $body): int
     {
         $statement = "
             UPDATE categories
@@ -67,19 +69,20 @@ class CategoriesService extends DatabaseCon
             WHERE id = :id;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => (int) $id,
-                'name' => $body->name,
-            ));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'id' => (int) $id,
+            'name' => $body->name,
+        );
+
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 
-    public function deleteCategory(int $id)
+    /**
+     * Removes a category
+     *
+     * @return Int
+     */
+    public function deleteCategory(int $id): int
     {
         $statement = "
             UPDATE categories
@@ -88,14 +91,10 @@ class CategoriesService extends DatabaseCon
             WHERE id = :id;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => (int) $id,
-            ));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'id' => (int) $id,
+        );
+
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 }

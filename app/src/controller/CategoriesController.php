@@ -28,10 +28,13 @@ class CategoriesController
     }
 
     /**
-     * TO-DO
-     * - reimplement responses with code and sutff
+     * Create a new category
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
      */
-    public static function addCategory(Request $req, Response $res)
+    public static function addCategory(Request $req, Response $res): void
     {
         $category = new CategoriesService();
         $data = $category->addCategory($req->getJson());
@@ -41,7 +44,14 @@ class CategoriesController
         ]);
     }
 
-    public static function editCategory(Request $req, Response $res)
+    /**
+     * Edits an existent category
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function editCategory(Request $req, Response $res): void
     {
         $id = $req->params[0];
         $category = new CategoriesService();
@@ -51,7 +61,14 @@ class CategoriesController
         ]);
     }
 
-    public static function deleteCategory(Request $req, Response $res)
+    /**
+     * Removes a category
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function deleteCategory(Request $req, Response $res): void
     {
         $id = $req->params[0];
         $category = new CategoriesService();

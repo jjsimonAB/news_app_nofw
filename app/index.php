@@ -14,7 +14,14 @@ use Src\utils\JwtUtil;
 $dotenv = new DotEnv(__DIR__);
 $dotenv->load();
 
-// $dbConnection = (new DatabaseCon())->getConnection();
+$configurations = array(
+    'request_method' => $_SERVER['REQUEST_METHOD'],
+    'request_uri' => $_SERVER['REQUEST_URI'],
+    'request_query_string' => $_SERVER['QUERY_STRING'],
+    'request_content_type' => $_SERVER["CONTENT_TYPE"]
+);
+
+Router::setConf($configurations);
 
 /**
  * Routes part

@@ -16,7 +16,7 @@ class NewsController
      * @param Response $res
      * @return void
      */
-    public static function getNews(Request $req, Response $res)
+    public static function getNews(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $news = new NewsService();
@@ -28,10 +28,13 @@ class NewsController
     }
 
     /**
-     * TO-DO
-     * - reimplement responses with code and sutff
+     * Create a news registry in the database
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
      */
-    public static function addNews(Request $req, Response $res)
+    public static function addNews(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $news = new NewsService();
@@ -42,7 +45,14 @@ class NewsController
         ]);
     }
 
-    public static function getNewsDetail(Request $req, Response $res)
+    /**
+     * Returns the detail of a given news id
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function getNewsDetail(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $id = $req->params[0];
@@ -54,12 +64,19 @@ class NewsController
         ]);
     }
 
-    public static function editNew(Request $req, Response $res)
+    /**
+     * Edit an existent news in the database
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function editNew(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $id = $req->params[0];
         $news = new NewsService();
-        if ($news->isOwner($user->id, $id)) {
+        if ($news->isOwner($user, $id)) {
             $data = $news->updateNews($id, $req->getJson());
             $res->toJson([
                 'data' => $data,
@@ -67,17 +84,24 @@ class NewsController
         } else {
             $res->status(500);
             $res->toJson([
-                'error' => "you don't own this",
+                'data' => "you don't own this",
             ]);
         }
     }
 
-    public static function deleteNews(Request $req, Response $res)
+    /**
+     * Removes a news from the database
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function deleteNews(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $id = $req->params[0];
         $news = new NewsService();
-        if ($news->isOwner($user->id, $id)) {
+        if ($news->isOwner($user, $id)) {
             $data = $news->deleteNews($id);
             $res->toJson([
                 'data' => $data,
@@ -85,12 +109,19 @@ class NewsController
         } else {
             $res->status(500);
             $res->toJson([
-                'error' => "you don't own this",
+                'data' => "you don't own this",
             ]);
         }
     }
 
-    public static function getNewsFiltred(Request $req, Response $res)
+    /**
+     * Get news filtered
+     *
+     * @param Request $req
+     * @param Response $res
+     * @return void
+     */
+    public static function getNewsFiltred(Request $req, Response $res): void
     {
         $user = $req->getUser();
         $news = new NewsService();

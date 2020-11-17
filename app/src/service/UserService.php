@@ -10,11 +10,15 @@ class UserService extends DatabaseCon
 
     public function __construct()
     {
-
-        $this->dbConnection = $this->getConnection();
+        $this->dbConnection = DatabaseCon::getInstance();;
     }
 
-    public function getUserByEmail(String $email)
+    /**
+     * Given an email returns a user
+     *
+     * @return array
+     */
+    public function getUserByEmail(String $email): array
     {
         $statement = "
             SELECT
@@ -24,18 +28,17 @@ class UserService extends DatabaseCon
             WHERE email = ?;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array($email));
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            return $result;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+        $data = array($email);
 
+        return $this->dbConnection->query($statement, $data)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function registerUser($body)
+    /**
+     * Creates a new user
+     *
+     * @return int
+     */
+    public function registerUser($body): int
     {
         $statement = "
             INSERT INTO users
@@ -44,17 +47,12 @@ class UserService extends DatabaseCon
                 (:user_name, :email, :password);
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'user_name' => $body->user_name,
-                'email' => $body->email,
-                'password' => hash('sha1', $body->password),
-            ));
+        $data = array(
+            'user_name' => $body->user_name,
+            'email' => $body->email,
+            'password' => password_hash($body->password, PASSWORD_DEFAULT),
+        );
 
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 }

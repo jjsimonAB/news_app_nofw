@@ -10,14 +10,15 @@ class NewsService extends DatabaseCon
 
     public function __construct()
     {
-        $this->dbConnection = $this->getConnection();
+        $this->dbConnection = DatabaseCon::getInstance();;
     }
 
     /**
-     * to-do
-     * - find a better name for this
+     * returns all the news from the database
+     *
+     * @return array news
      */
-    public function getAllNews(int $authorId)
+    public function getAllNews(int $authorId): array
     {
         /**
          * TO-DO
@@ -29,18 +30,19 @@ class NewsService extends DatabaseCon
             where author_id = :author_id AND is_deleted = 0;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'author_id' => $authorId,
-            ));
-            return $statement->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'author_id' => $authorId,
+        );
+
+        return $this->dbConnection->query($statement, $data)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function addNews(int $authorId, object $body)
+    /**
+     * Insert a news into the database
+     *
+     * @return Int
+     */
+    public function addNews(int $authorId, object $body): int
     {
         $statement = "
             INSERT INTO news
@@ -48,24 +50,50 @@ class NewsService extends DatabaseCon
             VALUES
                 (:title, :content, :author_id);
         ";
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'title' => $body->title,
-                'content' => $body->content,
-                'author_id' => $authorId,
-            ));
-            $insertedID = $this->dbConnection->lastInsertId();
-            if (isset($body->categories)) {
-                $this->attachCategorieToNews($insertedID, $body->categories);
-            }
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
+
+        $data = array(
+            'title' => $body->title,
+            'content' => $body->content,
+            'author_id' => $authorId,
+        );
+
+        $insertedNews = $this->dbConnection->query($statement, $data);
+        $insertedID = $this->dbConnection->getConnection()->lastInsertId();
+
+        if (isset($body->categories)) {
+            $this->attachCategorieToNews($insertedID, $body->categories);
         }
+
+        return $insertedNews->rowCount();
     }
 
-    public function getNewsDetail(int $id, int $authorId)
+    /**
+     * Returns all the categories related to a news
+     *
+     * @return array
+     */
+    private function getCategories(int $newsId): array
+    {
+        $statement = "
+            SELECT categories.id, categories.category_name
+            FROM news_categories
+            LEFT JOIN categories on news_categories.categorie_id = categories.id
+            where news_categories.news_id = :news_id;
+        ";
+
+        $data = array(
+            'news_id' => $newsId,
+        );
+
+        return $this->dbConnection->query($statement, $data)->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Returns the detail of a news
+     *
+     * @return array
+     */
+    public function getNewsDetail(int $id, int $authorId): array
     {
         $statement = "
             SELECT * FROM news
@@ -74,41 +102,28 @@ class NewsService extends DatabaseCon
             AND is_deleted = 0
         ";
 
-        $statement2 = "
-            SELECT categories.id, categories.category_name
-            FROM news_categories
-            LEFT JOIN categories on news_categories.categorie_id = categories.id
-            where news_categories.news_id = :news_id;
-        ";
+        $data = array(
+            'id' => $id,
+            'authorId' => $authorId,
+        );
 
-        $categories = [];
+        $result = $this->dbConnection->query($statement, $data)->fetchAll(\PDO::FETCH_ASSOC);
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => $id,
-                'authorId' => $authorId,
-            ));
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            /**
-             * TO-DO
-             * - Refactor: move this to a private function
-             */
-            $statement = $this->dbConnection->prepare($statement2);
-            $statement->execute(array(
-                'news_id' => $result[0]['id'],
-            ));
-            $categories = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            // print_r($categories);
+        if (!empty($result)) {
+            $categories = $this->getCategories($result[0]['id']);
             $result[0]['categories'] = $categories;
-
-            return $result;
-        } catch (\PDOException $e) {
-            return $e->getMessage();
         }
+
+        return $result;
     }
 
-    public function updateNews(int $id, object $body)
+
+    /**
+     * Edit an existent news
+     *
+     * @return int
+     */
+    public function updateNews(int $id, object $body): int
     {
         $statement = "
             UPDATE news
@@ -119,20 +134,21 @@ class NewsService extends DatabaseCon
             WHERE id = :id;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => (int) $id,
-                'title' => $body->title,
-                'content' => $body->content,
-            ));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'id' => (int) $id,
+            'title' => $body->title,
+            'content' => $body->content,
+        );
+
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 
-    public function deleteNews(int $id)
+    /**
+     * Removes a news from the database
+     *
+     * @return int
+     */
+    public function deleteNews(int $id): int
     {
         $statement = "
             UPDATE news
@@ -141,18 +157,19 @@ class NewsService extends DatabaseCon
             WHERE id = :id;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => (int) $id,
-            ));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'id' => (int) $id,
+        );
+
+        return $this->dbConnection->query($statement, $data)->rowCount();
     }
 
-    public function isOwner(int $authorId, int $newsId)
+    /**
+     * Verify if a given user is owner of a given news
+     *
+     * @return bool
+     */
+    public function isOwner($author, int $newsId): bool
     {
         $statement = "
             SELECT * FROM news
@@ -160,23 +177,25 @@ class NewsService extends DatabaseCon
             AND author_id = :authorId
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'id' => $newsId,
-                'authorId' => $authorId,
-            ));
-            $result = $statement->rowCount();
-            if ($result > 0) {
-                return true;
-            }
+        $data = array(
+            'id' => $newsId,
+            'authorId' => $author->id,
+        );
 
-            return false;
-        } catch (\PDOException $e) {
-            return $e->getMessage();
+        $result = $this->dbConnection->query($statement, $data)->rowCount();
+
+        if ($result > 0) {
+            return true;
         }
+
+        return false;
     }
 
+    /**
+     * creates the relationship between a news and a category
+     *
+     * @return void
+     */
     private function attachCategorieToNews(int $id, array $data): void
     {
 
@@ -186,20 +205,21 @@ class NewsService extends DatabaseCon
             VALUES
                 (:news_id, :categorie_id);
         ";
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            foreach ($data as $key => $value) {
-                $statement->execute(array(
-                    'news_id' => $id,
-                    'categorie_id' => $value,
-                ));
-            }
-        } catch (\PDOException $e) {
-            print_r($e->getMessage());
+
+        foreach ($data as $key => $value) {
+            $this->dbConnection->query($statement, array(
+                'news_id' => $id,
+                'categorie_id' => $value,
+            ))->rowCount();
         }
     }
 
-    public function getFiltredNews(int $userId, array $queryParams)
+    /**
+     * Returns filtred news from the database 
+     *
+     * @return bool
+     */
+    public function getFiltredNews(int $userId, array $queryParams): array
     {
         $filterKey = array_keys($queryParams)[0];
 
@@ -209,33 +229,10 @@ class NewsService extends DatabaseCon
             where $filterKey = :value AND is_deleted = 0;
         ";
 
-        try {
-            $statement = $this->dbConnection->prepare($statement);
-            $statement->execute(array(
-                'value' => $queryParams[$filterKey],
-            ));
-            return $statement->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-            return $e->getMessage();
-        }
+        $data = array(
+            'value' => $queryParams[$filterKey],
+        );
 
-        // switch ($filterKey) {
-        //     case 'title':
-        //         echo $queryParams[$filterKey];
-        //         break;
-        //     case 'author':
-        //         echo $queryParams[$filterKey];
-        //         break;
-        //     case 'content':
-        //         echo $queryParams[$filterKey];
-        //         break;
-        //     case 'between':
-        //         echo $queryParams[$filterKey];
-        //         break;
-        //     default:
-        //         return 'invalid filter';
-        //         break;
-        // }
-
+        return $this->dbConnection->query($statement, $data)->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

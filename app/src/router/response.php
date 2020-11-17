@@ -4,15 +4,25 @@ namespace Src\router;
 
 class Response
 {
-    private $status = 200;
+    private int $status = 200;
 
-    public function status(int $code)
+    /**
+     * Set the response status
+     *
+     * @return Response
+     */
+    public function status(int $code): Response
     {
         $this->status = $code;
         return $this;
     }
 
-    public function toJson($data = [])
+    /**
+     * Send a response to the client
+     *
+     * @return void
+     */
+    public function toJson($data = []): void
     {
         http_response_code($this->status);
         header('Content-Type: application/json');

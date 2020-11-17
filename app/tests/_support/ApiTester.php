@@ -15,12 +15,19 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
-*/
+ */
 class ApiTester extends \Codeception\Actor
 {
     use _generated\ApiTesterActions;
 
-    /**
-     * Define custom actions here
-     */
+    public function getJwtToken(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPost('users/login', [
+            'email' => 'jeff22i@doe.com',
+            "password" => "123456",
+        ]);
+        $jwt = $I->grabDataFromResponseByJsonPath('$.data');
+        $I->haveHttpHeader('Authorization', "Bearer " . $jwt[0]);
+    }
 }

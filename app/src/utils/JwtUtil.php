@@ -10,7 +10,7 @@ class JwtUtil
     {
         $key = getenv('JWT_KEY');
         $payload = array(
-            "iss" => "http://test.org",
+            "iss" => getenv("JWT_ISS"),
             "user" => $body,
             "iat" => time(),
         );
@@ -28,12 +28,11 @@ class JwtUtil
             try {
                 $decodedToken = JWT::decode($jwtToken[1], $key, array('HS256'));
                 return $decodedToken;
-            } catch (Exceptino $e) {
+            } catch (\Exception $e) {
                 return $e;
             }
         } else {
             return false;
         }
     }
-
 }

@@ -5,3 +5,10 @@ modules:
             url: http://localhost:8080/
             depends: PhpBrowser
             part: Json
+
+env:
+    chrome:
+        modules:
+           config:
+               WebDriver:
+                   browser: 'chrome'
