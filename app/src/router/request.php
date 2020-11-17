@@ -31,10 +31,10 @@ class Request
     /**
      * Set an user into the request object
      *
-     * @param  User
-     * @return Object User
+     * @param  object user
+     * @return void
      */
-    public function setUser($user): void
+    public function setUser(object $user): void
     {
         $this->user = $user;
     }

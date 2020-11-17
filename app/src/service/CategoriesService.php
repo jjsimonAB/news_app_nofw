@@ -2,11 +2,12 @@
 
 namespace Src\service;
 
+use PDO;
 use Src\db\DatabaseCon;
 
 class CategoriesService extends DatabaseCon
 {
-    private $dbConnection = null;
+    private ?DatabaseCon $dbConnection = null;
 
     public function __construct()
     {

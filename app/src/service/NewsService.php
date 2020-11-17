@@ -6,7 +6,7 @@ use Src\db\DatabaseCon;
 
 class NewsService extends DatabaseCon
 {
-    private $dbConnection = null;
+    private ?DatabaseCon $dbConnection = null;
 
     public function __construct()
     {

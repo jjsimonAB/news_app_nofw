@@ -2,11 +2,19 @@
 
 namespace Src\utils;
 
-use \Firebase\JWT\JWT;
+use Firebase\JWT\JWT;
+use Exception;
 
 class JwtUtil
 {
-    public static function generateJwt($body = [])
+
+    /**
+     * Creates a new valid JWT token
+     * 
+     * @param array body
+     * @return string jwtToken
+     */
+    public static function generateJwt(array $body = []): string
     {
         $key = getenv('JWT_KEY');
         $payload = array(
@@ -19,7 +27,13 @@ class JwtUtil
         return $jwt;
     }
 
-    public static function validateToken($token)
+    /**
+     * Given a jwt validates it and return if its valid or not
+     * 
+     * @param string token
+     * @return string jwtToken
+     */
+    public static function validateToken($token): object
     {
         if (isset($token['Authorization'])) {
             $key = getenv('JWT_KEY');
@@ -28,7 +42,7 @@ class JwtUtil
             try {
                 $decodedToken = JWT::decode($jwtToken[1], $key, array('HS256'));
                 return $decodedToken;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $e;
             }
         } else {
